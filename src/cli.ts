@@ -2,6 +2,7 @@ import path from 'node:path'
 import { readdir } from 'node:fs/promises'
 import { renderCaptionVSL } from '../render'
 import { VOICES } from './lib/elevenlabs'
+import type { BrandedTemplateProps } from './lib/types'
 import { templates } from './templates'
 
 type CliCommand = 'generate' | 'templates' | 'voices' | 'preview' | 'batch'
@@ -24,6 +25,18 @@ function parseArgs(argv: string[]) {
   return {
     command: command as CliCommand | undefined,
     flags,
+  }
+}
+
+export function parseBrandJson(value?: string): BrandedTemplateProps | undefined {
+  if (!value) {
+    return undefined
+  }
+
+  try {
+    return JSON.parse(value) as BrandedTemplateProps
+  } catch (error) {
+    throw new Error(`Invalid --brand-json payload: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 
@@ -65,6 +78,7 @@ export async function runCli(argv = process.argv.slice(2)) {
           width: Number(flags.width || 1080),
           height: Number(flags.height || 1080),
         },
+        brand: parseBrandJson(flags['brand-json']),
       })
     case 'batch': {
       const transcripts = await expandTranscriptGlob(flags.transcripts)
@@ -83,6 +97,7 @@ export async function runCli(argv = process.argv.slice(2)) {
               width: Number(flags.width || 1080),
               height: Number(flags.height || 1080),
             },
+            brand: parseBrandJson(flags['brand-json']),
           })
         )
       }

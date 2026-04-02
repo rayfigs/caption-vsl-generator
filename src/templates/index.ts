@@ -18,6 +18,10 @@ export function validateTemplate(template: Template): Template {
     throw new Error('Template must include an id and name')
   }
 
+  if (!template.brandDefaults) {
+    throw new Error(`Template ${template.id} must define brand defaults`)
+  }
+
   if (template.canvas.width <= 0 || template.canvas.height <= 0) {
     throw new Error(`Template ${template.id} must define a positive canvas size`)
   }

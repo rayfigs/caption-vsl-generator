@@ -37,6 +37,7 @@ describe('cli', () => {
       '--output', '/tmp/out.mp4',
       '--width', '1080',
       '--height', '1350',
+      '--brand-json', '{"highlightColor":"#ff00aa","logoPlacement":"watermark"}',
     ])
 
     expect(renderCaptionVSLMock).toHaveBeenCalledWith({
@@ -45,6 +46,10 @@ describe('cli', () => {
       voiceId: 'warm-female',
       outputPath: '/tmp/out.mp4',
       canvas: { width: 1080, height: 1350 },
+      brand: {
+        highlightColor: '#ff00aa',
+        logoPlacement: 'watermark',
+      },
     })
   })
 
@@ -67,5 +72,14 @@ describe('cli', () => {
 
     expect(renderCaptionVSLMock).toHaveBeenCalledTimes(2)
     expect(result).toHaveLength(2)
+  })
+
+  it('rejects invalid brand json', async () => {
+    await expect(runCli([
+      'generate',
+      '--transcript', 'script.txt',
+      '--output', '/tmp/out.mp4',
+      '--brand-json', '{invalid',
+    ])).rejects.toThrow('Invalid --brand-json payload')
   })
 })

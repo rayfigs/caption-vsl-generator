@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { CaptionVSL } from '../compositions/CaptionVSL'
+import { applyBrandingToTemplate } from '../lib/branding'
 import { templates, validateTemplate } from './index'
 
 vi.mock('remotion', async () => {
@@ -12,7 +13,7 @@ vi.mock('remotion', async () => {
     useVideoConfig: () => ({ fps: 30, width: 1080, height: 1080, durationInFrames: 90, id: 'CaptionVSL' }),
     Audio: ({ src }: { src: string }) => <div data-testid="audio">{src}</div>,
     Video: ({ src }: { src: string }) => <div data-testid="video">{src}</div>,
-    Img: ({ src }: { src: string }) => <img alt="" src={src} />,
+    Img: ({ src }: { src: string }) => <div data-img-src={src} />,
   }
 })
 
@@ -54,5 +55,19 @@ describe('templates', () => {
       view.unmount()
       cleanup()
     }
+  })
+
+  it('applies brand overrides on top of template defaults', () => {
+    const resolved = applyBrandingToTemplate(templates[0], {
+      background: '#112233',
+      textColor: '#fefefe',
+      highlightColor: '#ff5500',
+      bodyFont: 'Montserrat',
+    })
+
+    expect(resolved.template.background.color).toBe('#112233')
+    expect(resolved.template.text.color).toBe('#fefefe')
+    expect(resolved.template.highlight.color).toBe('#ff5500')
+    expect(resolved.template.text.fontFamily).toBe('Montserrat')
   })
 })

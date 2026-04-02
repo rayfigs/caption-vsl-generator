@@ -6,6 +6,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@remotion/bundler": "4.0.443",
     "@remotion/cli": "4.0.443",
     "@remotion/renderer": "^4.0.443",
     "@remotion/tailwind-v4": "4.0.443",

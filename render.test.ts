@@ -19,8 +19,11 @@ vi.mock('./src/lib/elevenlabs', () => ({
   generateSpeech: generateSpeechMock,
 }))
 
-vi.mock('@remotion/renderer', () => ({
+vi.mock('@remotion/bundler', () => ({
   bundle: bundleMock,
+}))
+
+vi.mock('@remotion/renderer', () => ({
   selectComposition: selectCompositionMock,
   renderMedia: renderMediaMock,
 }))
@@ -61,11 +64,20 @@ describe('renderCaptionVSL', () => {
       voiceId: 'warm-female',
       outputPath,
       canvas: { width: 1080, height: 1080 },
+      brand: { logoPlacement: 'corner-badge', logoUrl: 'https://example.com/logo.png' },
     })
 
     expect(bundleMock).toHaveBeenCalled()
-    expect(selectCompositionMock).toHaveBeenCalled()
-    expect(renderMediaMock).toHaveBeenCalled()
+    expect(selectCompositionMock).toHaveBeenCalledWith(expect.objectContaining({
+      inputProps: expect.objectContaining({
+        brand: { logoPlacement: 'corner-badge', logoUrl: 'https://example.com/logo.png' },
+      }),
+    }))
+    expect(renderMediaMock).toHaveBeenCalledWith(expect.objectContaining({
+      inputProps: expect.objectContaining({
+        brand: { logoPlacement: 'corner-badge', logoUrl: 'https://example.com/logo.png' },
+      }),
+    }))
     await expect(readFile(outputPath, 'utf8')).resolves.toBe('mock-video')
     expect(result).toEqual({
       outputPath,

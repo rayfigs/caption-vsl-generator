@@ -1,6 +1,7 @@
 import { mkdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { bundle, renderMedia, selectComposition } from '@remotion/renderer'
+import { bundle } from '@remotion/bundler'
+import { renderMedia, selectComposition } from '@remotion/renderer'
 import { generateSpeech } from './src/lib/elevenlabs'
 import { calculateLayout } from './src/lib/layout-engine'
 import { parseTranscript } from './src/lib/transcript-parser'
@@ -81,6 +82,7 @@ export async function renderCaptionVSL(options: RenderCaptionVSLOptions) {
     id: 'CaptionVSL',
     inputProps: {
       template,
+      brand: options.brand,
       segments,
       audioUrl: speech.audioUrl,
       audioDuration: speech.duration,
@@ -94,6 +96,7 @@ export async function renderCaptionVSL(options: RenderCaptionVSLOptions) {
     outputLocation: options.outputPath,
     inputProps: {
       template,
+      brand: options.brand,
       segments,
       audioUrl: speech.audioUrl,
       audioDuration: speech.duration,

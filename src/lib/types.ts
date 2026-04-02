@@ -21,9 +21,32 @@ export interface LayoutConfig {
   padding: number
 }
 
+export type LogoCornerPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+
+export type LogoPlacement = 'corner-badge' | 'intro-card' | 'outro-card' | 'watermark' | 'lower-third'
+
+export type DesignOverlay = 'gradient-scrim' | 'frame-border' | 'cta-bar'
+
+export interface BrandedTemplateProps {
+  background?: string
+  textColor?: string
+  highlightColor?: string
+  secondaryColor?: string
+  headingFont?: string
+  bodyFont?: string
+  logoUrl?: string
+  logoPosition?: LogoCornerPosition
+  logoScale?: number
+  logoPlacement?: LogoPlacement
+  designOverlays?: DesignOverlay[]
+  ctaText?: string
+  tagline?: string
+}
+
 export interface Template {
   id: string
   name: string
+  brandDefaults: BrandedTemplateProps
   background: {
     type: 'solid' | 'gradient' | 'image' | 'video'
     color?: string
@@ -81,5 +104,6 @@ export interface RenderCaptionVSLOptions {
   voiceId: string
   outputPath: string
   canvas: { width: number; height: number }
+  brand?: BrandedTemplateProps
   overrides?: Partial<Template>
 }

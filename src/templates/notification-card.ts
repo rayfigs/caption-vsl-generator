@@ -3,6 +3,20 @@ import type { Template } from '../lib/types'
 export const notificationCard: Template = {
   id: 'notification-card',
   name: 'Notification Card',
+  brandDefaults: {
+    background: '#111827',
+    textColor: '#111827',
+    highlightColor: '#7c3aed',
+    secondaryColor: '#312e81',
+    headingFont: 'Arial',
+    bodyFont: 'Arial',
+    logoPosition: 'bottom-right',
+    logoScale: 0.14,
+    logoPlacement: 'corner-badge',
+    designOverlays: [],
+    ctaText: 'See It In Action',
+    tagline: 'Trusted by modern teams',
+  },
   background: {
     type: 'gradient',
     gradient: {

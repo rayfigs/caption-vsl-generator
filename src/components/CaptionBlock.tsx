@@ -52,10 +52,6 @@ export const CaptionBlock: React.FC<CaptionBlockProps> = ({
   transition,
   currentTime,
 }) => {
-  const words =
-    segment.words.length > 0
-      ? segment.words
-      : segment.text.split(/\s+/).map((word) => ({ word, start: 0, end: 0 }))
   const lines = fitTextToBox(segment.text, {
     boxWidth: template.captionBox.width,
     boxHeight: template.captionBox.height,

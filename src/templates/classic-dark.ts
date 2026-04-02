@@ -3,6 +3,20 @@ import type { Template } from '../lib/types'
 export const classicDark: Template = {
   id: 'classic-dark',
   name: 'Classic Dark',
+  brandDefaults: {
+    background: '#050505',
+    textColor: '#ffffff',
+    highlightColor: '#facc15',
+    secondaryColor: '#27272a',
+    headingFont: 'Arial',
+    bodyFont: 'Arial',
+    logoPosition: 'top-right',
+    logoScale: 0.14,
+    logoPlacement: 'corner-badge',
+    designOverlays: [],
+    ctaText: 'Get Started',
+    tagline: 'Built for performance',
+  },
   background: {
     type: 'solid',
     color: '#050505',
