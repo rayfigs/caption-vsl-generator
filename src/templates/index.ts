@@ -13,6 +13,26 @@ export const templates: Template[] = [
   notificationCard,
 ]
 
+export function validateTemplate(template: Template): Template {
+  if (!template.id || !template.name) {
+    throw new Error('Template must include an id and name')
+  }
+
+  if (template.canvas.width <= 0 || template.canvas.height <= 0) {
+    throw new Error(`Template ${template.id} must define a positive canvas size`)
+  }
+
+  if (template.captionBox.width <= 0 || template.captionBox.height <= 0) {
+    throw new Error(`Template ${template.id} must define a positive caption box size`)
+  }
+
+  if (template.text.fontSize <= 0) {
+    throw new Error(`Template ${template.id} must define a positive font size`)
+  }
+
+  return template
+}
+
 export function getTemplate(id: string): Template {
   const template = templates.find((entry) => entry.id === id)
 
@@ -20,5 +40,5 @@ export function getTemplate(id: string): Template {
     throw new Error(`Unknown template: ${id}`)
   }
 
-  return template
+  return validateTemplate(template)
 }
