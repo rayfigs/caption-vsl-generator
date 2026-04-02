@@ -1,29 +1,40 @@
 {
   "name": "caption-vsl-generator",
   "version": "1.0.0",
-  "description": "My Remotion video",
+  "description": "Remotion caption VSL generator with ElevenLabs voiceover and timed captions",
   "repository": {},
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
     "@remotion/cli": "4.0.443",
+    "@remotion/renderer": "^4.0.443",
+    "@remotion/tailwind-v4": "4.0.443",
+    "axios": "^1.14.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.443",
-    "@remotion/tailwind-v4": "4.0.443",
     "tailwindcss": "4.0.0"
   },
   "devDependencies": {
     "@remotion/eslint-config-flat": "4.0.443",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^25.5.0",
     "@types/react": "19.2.7",
     "@types/web": "0.0.166",
     "eslint": "9.19.0",
+    "jsdom": "^29.0.1",
     "prettier": "3.8.1",
-    "typescript": "5.9.3"
+    "tsx": "^4.21.0",
+    "typescript": "5.9.3",
+    "vitest": "^4.1.2"
   },
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
+    "render": "tsx render.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   },

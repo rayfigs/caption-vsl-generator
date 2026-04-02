@@ -1,18 +1,27 @@
-import "./index.css";
-import { Composition } from "remotion";
-import { MyComposition } from "./Composition";
+import './index.css'
+import { Composition } from 'remotion'
+import { CaptionVSL } from './compositions/CaptionVSL'
+import { getTemplate } from './templates'
 
 export const RemotionRoot: React.FC = () => {
+  const template = getTemplate('classic-dark')
+
   return (
     <>
       <Composition
-        id="MyComp"
-        component={MyComposition}
-        durationInFrames={60}
+        id="CaptionVSL"
+        component={CaptionVSL}
+        durationInFrames={90}
         fps={30}
-        width={1280}
-        height={720}
+        width={template.canvas.width}
+        height={template.canvas.height}
+        defaultProps={{
+          template,
+          audioUrl: '',
+          audioDuration: 3,
+          segments: [],
+        }}
       />
     </>
-  );
-};
+  )
+}
