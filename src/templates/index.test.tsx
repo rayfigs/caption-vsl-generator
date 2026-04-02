@@ -1,7 +1,20 @@
 import { cleanup, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { CaptionVSL } from '../compositions/CaptionVSL'
 import { templates, validateTemplate } from './index'
+
+vi.mock('remotion', async () => {
+  const actual = await vi.importActual<typeof import('remotion')>('remotion')
+
+  return {
+    ...actual,
+    useCurrentFrame: () => 0,
+    useVideoConfig: () => ({ fps: 30, width: 1080, height: 1080, durationInFrames: 90, id: 'CaptionVSL' }),
+    Audio: ({ src }: { src: string }) => <div data-testid="audio">{src}</div>,
+    Video: ({ src }: { src: string }) => <div data-testid="video">{src}</div>,
+    Img: ({ src }: { src: string }) => <img alt="" src={src} />,
+  }
+})
 
 describe('templates', () => {
   it('validates every template config', () => {
