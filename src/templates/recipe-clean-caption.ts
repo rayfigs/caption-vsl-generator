@@ -50,6 +50,6 @@ export const recipeCleanCaption: Template = {
     segmentOut: 'none',
     duration: 0,
   },
-  animationStyle: 'smooth',
-  wordEntry: 'stagger',
+  animationStyle: 'none',
+  wordEntry: 'none',
 }

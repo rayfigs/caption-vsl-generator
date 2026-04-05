@@ -51,5 +51,5 @@ export const recipeStoryArc: Template = {
     duration: 0.5,
   },
   animationStyle: 'snappy',
-  wordEntry: 'stagger',
+  wordEntry: 'none',
 }

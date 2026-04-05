@@ -52,5 +52,5 @@ export const recipeBoldStatement: Template = {
     duration: 0,
   },
   animationStyle: 'snappy',
-  wordEntry: 'pop',
+  wordEntry: 'none',
 }

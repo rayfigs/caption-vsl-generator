@@ -51,6 +51,6 @@ export const recipeHypeReel: Template = {
     segmentOut: 'none',
     duration: 0,
   },
-  animationStyle: 'elastic',
-  wordEntry: 'cascade',
+  animationStyle: 'snappy',
+  wordEntry: 'none',
 }

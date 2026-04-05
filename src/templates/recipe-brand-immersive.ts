@@ -50,6 +50,6 @@ export const recipeBrandImmersive: Template = {
     segmentOut: 'fade',
     duration: 0.15,
   },
-  animationStyle: 'smooth',
-  wordEntry: 'stagger',
+  animationStyle: 'snappy',
+  wordEntry: 'none',
 }

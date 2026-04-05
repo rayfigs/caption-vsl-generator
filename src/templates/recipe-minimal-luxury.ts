@@ -52,6 +52,6 @@ export const recipeMinimalLuxury: Template = {
     segmentOut: 'fade',
     duration: 1.2,
   },
-  animationStyle: 'smooth',
-  wordEntry: 'blur-in',
+  animationStyle: 'none',
+  wordEntry: 'none',
 }
