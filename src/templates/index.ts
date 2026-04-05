@@ -3,14 +3,49 @@ import { classicDark } from './classic-dark'
 import { classicPurple } from './classic-purple'
 import { modernMinimal } from './modern-minimal'
 import { notificationCard } from './notification-card'
+import { rorickBold } from './rorick-bold'
+import { portraitKinetic } from './portrait-kinetic'
+import { portraitImpact } from './portrait-impact'
+import { portraitTumble } from './portrait-tumble'
+import { portraitTypewriter } from './portrait-typewriter'
+import { portraitWave } from './portrait-wave'
+import { portraitBlur } from './portrait-blur'
+import { portraitTestimonial } from './portrait-testimonial'
+import { recipeCleanCaption } from './recipe-clean-caption'
+import { recipeBoldStatement } from './recipe-bold-statement'
+import { recipeBrandImmersive } from './recipe-brand-immersive'
+import { recipeSocialProof } from './recipe-social-proof'
+import { recipeDocumentary } from './recipe-documentary'
+import { recipeHypeReel } from './recipe-hype-reel'
+import { recipeStoryArc } from './recipe-story-arc'
+import { recipeMinimalLuxury } from './recipe-minimal-luxury'
 import type { Template } from '../lib/types'
 
 export const templates: Template[] = [
+  // Original templates
   classicDark,
   classicPurple,
   modernMinimal,
   boldStatement,
   notificationCard,
+  rorickBold,
+  // Portrait templates
+  portraitKinetic,
+  portraitImpact,
+  portraitTumble,
+  portraitTypewriter,
+  portraitWave,
+  portraitBlur,
+  portraitTestimonial,
+  // Style recipes (from re:Motion Agent Brain)
+  recipeCleanCaption,
+  recipeBoldStatement,
+  recipeBrandImmersive,
+  recipeSocialProof,
+  recipeDocumentary,
+  recipeHypeReel,
+  recipeStoryArc,
+  recipeMinimalLuxury,
 ]
 
 export function validateTemplate(template: Template): Template {
