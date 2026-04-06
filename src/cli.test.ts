@@ -3,12 +3,14 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { renderCaptionVSLMock } = vi.hoisted(() => ({
+const { renderCaptionVSLMock, renderRemotionCompositionMock } = vi.hoisted(() => ({
   renderCaptionVSLMock: vi.fn(),
+  renderRemotionCompositionMock: vi.fn(),
 }))
 
 vi.mock('../render', () => ({
   renderCaptionVSL: renderCaptionVSLMock,
+  renderRemotionComposition: renderRemotionCompositionMock,
 }))
 
 vi.mock('./lib/reframe', () => ({
@@ -28,6 +30,7 @@ import { runCli } from './cli'
 describe('cli', () => {
   beforeEach(() => {
     renderCaptionVSLMock.mockReset()
+    renderRemotionCompositionMock.mockReset()
   })
 
   it('lists templates, recipes, and voices', async () => {
@@ -82,6 +85,36 @@ describe('cli', () => {
       inputVideo: undefined,
       transcriber: 'elevenlabs',
       autoReframe: false,
+    })
+  })
+
+  it('renders standalone compositions from CLI flags', async () => {
+    renderRemotionCompositionMock.mockResolvedValue({ outputPath: '/tmp/title-card.mp4', compositionId: 'TitleCard' })
+
+    await runCli([
+      'generate',
+      '--composition', 'title-card',
+      '--title', 'The Problem',
+      '--subtitle', 'What was going wrong',
+      '--brand', 'fitness_doctor',
+      '--canvas', 'portrait',
+      '--style', 'wipe',
+      '--output', '/tmp/title-card.mp4',
+    ])
+
+    expect(renderRemotionCompositionMock).toHaveBeenCalledWith({
+      compositionId: 'TitleCard',
+      outputPath: '/tmp/title-card.mp4',
+      canvas: 'portrait',
+      duration: 3,
+      props: expect.objectContaining({
+        title: 'The Problem',
+        subtitle: 'What was going wrong',
+        style: 'wipe',
+        brand: expect.objectContaining({
+          highlightColor: '#9003F1',
+        }),
+      }),
     })
   })
 

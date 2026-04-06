@@ -1,6 +1,6 @@
 import path from 'node:path'
-import { readdir } from 'node:fs/promises'
-import { renderCaptionVSL } from '../render'
+import { readFile, readdir } from 'node:fs/promises'
+import { renderCaptionVSL, renderRemotionComposition } from '../render'
 import { VOICES } from './lib/elevenlabs'
 import { getBrandProfile, listBrandProfiles } from './brands'
 import { reframeToPortrait } from './lib/reframe'
@@ -45,6 +45,15 @@ function parseArgs(argv: string[]) {
   }
 }
 
+type CompositionAlias = 'title-card' | 'lower-third' | 'explainer' | 'end-card'
+
+const COMPOSITION_IDS: Record<CompositionAlias, string> = {
+  'title-card': 'TitleCard',
+  'lower-third': 'LowerThird',
+  explainer: 'ExplainerScene',
+  'end-card': 'EndCard',
+}
+
 export function parseBrandJson(value?: string): BrandedTemplateProps | undefined {
   if (!value) {
     return undefined
@@ -54,6 +63,116 @@ export function parseBrandJson(value?: string): BrandedTemplateProps | undefined
     return JSON.parse(value) as BrandedTemplateProps
   } catch (error) {
     throw new Error(`Invalid --brand-json payload: ${error instanceof Error ? error.message : String(error)}`)
+  }
+}
+
+function resolveBrand(flags: Record<string, string>) {
+  const inlineBrand = parseBrandJson(flags['brand-json'])
+  const namedBrand = flags.brand ? getBrandProfile(flags.brand) : undefined
+
+  if (!inlineBrand && !namedBrand) {
+    return undefined
+  }
+
+  return {
+    ...namedBrand,
+    ...inlineBrand,
+  }
+}
+
+function resolveOutputPath(flags: Record<string, string>, fallbackName: string) {
+  return flags.output ?? path.join(process.cwd(), 'output', `${fallbackName}.mp4`)
+}
+
+async function parsePointsInput(value?: string) {
+  if (!value) {
+    throw new Error('--points <points.json> is required for explainer composition')
+  }
+
+  const payload = value.trim().startsWith('[')
+    ? value
+    : await readFile(path.resolve(value), 'utf8')
+
+  try {
+    return JSON.parse(payload) as Array<{ icon?: string; heading: string; body?: string }>
+  } catch (error) {
+    throw new Error(`Invalid --points payload: ${error instanceof Error ? error.message : String(error)}`)
+  }
+}
+
+async function buildCompositionRequest(flags: Record<string, string>) {
+  const compositionFlag = flags.composition as CompositionAlias | undefined
+  if (!compositionFlag || !(compositionFlag in COMPOSITION_IDS)) {
+    throw new Error(`Unknown composition: ${compositionFlag || 'missing'}`)
+  }
+
+  const brand = resolveBrand(flags)
+  const canvas = flags.canvas as 'portrait' | 'square' | 'landscape' | undefined
+  const compositionId = COMPOSITION_IDS[compositionFlag]
+
+  switch (compositionFlag) {
+    case 'title-card':
+      if (!flags.title) throw new Error('--title is required for title-card composition')
+      return {
+        compositionId,
+        outputPath: resolveOutputPath(flags, compositionFlag),
+        canvas,
+        duration: flags.duration ? Number(flags.duration) : 3,
+        props: {
+          title: flags.title,
+          subtitle: flags.subtitle,
+          brand,
+          duration: flags.duration ? Number(flags.duration) : 3,
+          style: flags.style ?? 'scale-in',
+        },
+      }
+    case 'lower-third':
+      if (!flags.name) throw new Error('--name is required for lower-third composition')
+      return {
+        compositionId,
+        outputPath: resolveOutputPath(flags, compositionFlag),
+        canvas,
+        duration: flags.duration ? Number(flags.duration) : 5,
+        props: {
+          name: flags.name,
+          title: flags.title,
+          brand,
+          position: flags.position ?? 'left',
+          enterAt: flags['enter-at'] ? Number(flags['enter-at']) : 0.5,
+          exitAt: flags['exit-at'] ? Number(flags['exit-at']) : 4,
+          style: flags.style ?? 'slide-up',
+        },
+      }
+    case 'explainer':
+      return {
+        compositionId,
+        outputPath: resolveOutputPath(flags, compositionFlag),
+        canvas,
+        duration: flags.duration
+          ? Number(flags.duration)
+          : undefined,
+        props: {
+          points: await parsePointsInput(flags.points),
+          brand,
+          style: flags.style ?? 'list-reveal',
+          secondsPerPoint: flags['seconds-per-point'] ? Number(flags['seconds-per-point']) : 3,
+        },
+      }
+    case 'end-card':
+      if (!flags['cta-text']) throw new Error('--cta-text is required for end-card composition')
+      return {
+        compositionId,
+        outputPath: resolveOutputPath(flags, compositionFlag),
+        canvas,
+        duration: flags.duration ? Number(flags.duration) : 3,
+        props: {
+          logoUrl: flags['logo-url'],
+          ctaText: flags['cta-text'],
+          contactLine: flags['contact-line'],
+          brand,
+          duration: flags.duration ? Number(flags.duration) : 3,
+        },
+      }
   }
 }
 
@@ -116,6 +235,11 @@ export async function runCli(argv = process.argv.slice(2)) {
       })
     }
     case 'generate': {
+      if (flags.composition) {
+        const request = await buildCompositionRequest(flags)
+        return renderRemotionComposition(request)
+      }
+
       // Support canvas presets: --canvas portrait | square | landscape
       // Or explicit: --width 1920 --height 1080
       // If neither is passed, canvas is undefined and render.ts will use the template's own canvas.

@@ -44,10 +44,13 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{
           title: 'Title',
           subtitle: '',
-          backgroundColor: '#000000',
-          textColor: '#ffffff',
-          accentColor: '#2563EB',
-          fontFamily: 'Montserrat',
+          brand: {
+            background: '#111827',
+            textColor: '#ffffff',
+            highlightColor: '#2563EB',
+            headingFont: 'Montserrat',
+            bodyFont: 'Montserrat',
+          },
           duration: 3,
           style: 'scale-in',
         } as unknown as Record<string, unknown>}
@@ -62,13 +65,15 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{
           name: 'Speaker Name',
           title: 'Title',
-          backgroundColor: 'rgba(0,0,0,0.6)',
-          textColor: '#ffffff',
-          accentColor: '#2563EB',
-          fontFamily: 'Montserrat',
-          enterAt: 30,
-          exitAt: 120,
+          brand: {
+            textColor: '#ffffff',
+            highlightColor: '#2563EB',
+            bodyFont: 'Montserrat',
+          },
+          enterAt: 0.5,
+          exitAt: 4,
           position: 'left',
+          style: 'slide-up',
         } as unknown as Record<string, unknown>}
       />
       <Composition
@@ -84,10 +89,14 @@ export const RemotionRoot: React.FC = () => {
             { icon: '2', heading: 'Second Point', body: 'Another description' },
             { icon: '3', heading: 'Third Point', body: 'Final description' },
           ],
-          backgroundColor: '#0F172A',
-          textColor: '#ffffff',
-          accentColor: '#2563EB',
-          fontFamily: 'Montserrat',
+          brand: {
+            background: '#0F172A',
+            textColor: '#ffffff',
+            highlightColor: '#2563EB',
+            headingFont: 'Montserrat',
+            bodyFont: 'Montserrat',
+          },
+          style: 'list-reveal',
           secondsPerPoint: 3,
         } as unknown as Record<string, unknown>}
       />
@@ -101,10 +110,14 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{
           ctaText: 'Book Your Free Consultation',
           contactLine: 'example.com',
-          backgroundColor: '#0F172A',
-          textColor: '#ffffff',
-          accentColor: '#2563EB',
-          fontFamily: 'Montserrat',
+          brand: {
+            background: '#0F172A',
+            textColor: '#ffffff',
+            highlightColor: '#2563EB',
+            headingFont: 'Montserrat',
+            bodyFont: 'Montserrat',
+          },
+          duration: 3,
         } as unknown as Record<string, unknown>}
       />
       <Composition
