@@ -1,49 +1,62 @@
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion'
+import type { BrandedTemplateProps } from '../lib/types'
+
+function resolveBrand(brand?: BrandedTemplateProps) {
+  return {
+    textColor: brand?.textColor ?? '#ffffff',
+    accentColor: brand?.highlightColor ?? brand?.secondaryColor ?? '#2563EB',
+    bodyFont: brand?.bodyFont ?? brand?.headingFont ?? 'Montserrat',
+  }
+}
 
 export interface LowerThirdProps {
   name: string
   title?: string
-  backgroundColor: string
-  textColor: string
-  accentColor: string
-  fontFamily: string
+  brand?: BrandedTemplateProps
   enterAt: number
   exitAt: number
   position: 'left' | 'center'
+  style: 'slide-up' | 'fade' | 'slide-left'
 }
 
 export const LowerThird: React.FC<LowerThirdProps> = ({
   name,
   title,
-  backgroundColor,
-  textColor,
-  accentColor,
-  fontFamily,
+  brand,
   enterAt,
   exitAt,
   position,
+  style,
 }) => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
+  const resolvedBrand = resolveBrand(brand)
+  const enterFrame = Math.round(enterAt * fps)
+  const exitFrame = Math.round(exitAt * fps)
 
   const enterProgress = spring({
-    frame: Math.max(0, frame - enterAt),
+    frame: Math.max(0, frame - enterFrame),
     fps,
     config: { damping: 18, stiffness: 90, mass: 0.6 },
     durationInFrames: Math.round(fps * 0.5),
   })
 
   const exitOpacity = exitAt > 0
-    ? interpolate(frame, [exitAt, exitAt + Math.round(fps * 0.3)], [1, 0], {
+    ? interpolate(frame, [exitFrame, exitFrame + Math.round(fps * 0.3)], [1, 0], {
         extrapolateLeft: 'clamp',
         extrapolateRight: 'clamp',
       })
     : 1
 
-  const isVisible = frame >= enterAt
+  const isVisible = frame >= enterFrame
   if (!isVisible) return null
 
-  const slideY = interpolate(enterProgress, [0, 1], [30, 0])
+  const slideY = style === 'slide-up'
+    ? interpolate(enterProgress, [0, 1], [30, 0])
+    : 0
+  const slideX = style === 'slide-left'
+    ? interpolate(enterProgress, [0, 1], [-40, 0])
+    : 0
   const opacity = enterProgress * exitOpacity
 
   return (
@@ -58,11 +71,11 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
     >
       <div
         style={{
-          opacity,
-          transform: `translateY(${slideY}px)`,
+          opacity: style === 'fade' ? exitOpacity : opacity,
+          transform: `translate(${slideX}px, ${slideY}px)`,
           display: 'flex',
           flexDirection: 'row',
-          backgroundColor: 'rgba(0,0,0,0.6)',
+          backgroundColor: 'rgba(0,0,0,0.5)',
           borderRadius: 8,
           overflow: 'hidden',
         }}
@@ -70,7 +83,7 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
         <div
           style={{
             width: 3,
-            backgroundColor: accentColor,
+            backgroundColor: resolvedBrand.accentColor,
             flexShrink: 0,
           }}
         />
@@ -84,10 +97,10 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
         >
           <div
             style={{
-              color: textColor,
+              color: resolvedBrand.textColor,
               fontSize: 32,
               fontWeight: 700,
-              fontFamily,
+              fontFamily: resolvedBrand.bodyFont,
               lineHeight: 1.2,
             }}
           >
@@ -96,10 +109,10 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
           {title ? (
             <div
               style={{
-                color: textColor,
+                color: resolvedBrand.textColor,
                 fontSize: 24,
                 fontWeight: 400,
-                fontFamily,
+                fontFamily: resolvedBrand.bodyFont,
                 opacity: 0.7,
                 lineHeight: 1.3,
               }}

@@ -1,28 +1,34 @@
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion'
+import type { BrandedTemplateProps } from '../lib/types'
+
+function resolveBrand(brand?: BrandedTemplateProps) {
+  return {
+    background: brand?.background ?? '#111827',
+    textColor: brand?.textColor ?? '#ffffff',
+    accentColor: brand?.highlightColor ?? brand?.secondaryColor ?? '#2563EB',
+    headingFont: brand?.headingFont ?? 'Montserrat',
+    bodyFont: brand?.bodyFont ?? brand?.headingFont ?? 'Montserrat',
+  }
+}
 
 export interface TitleCardProps {
   title: string
   subtitle?: string
-  backgroundColor: string
-  textColor: string
-  accentColor: string
-  fontFamily: string
+  brand?: BrandedTemplateProps
   duration: number
-  style: 'fade' | 'scale-in' | 'slide-up'
+  style: 'fade' | 'scale-in' | 'slide-up' | 'wipe'
 }
 
 export const TitleCard: React.FC<TitleCardProps> = ({
   title,
   subtitle,
-  backgroundColor,
-  textColor,
-  accentColor,
-  fontFamily,
+  brand,
   duration,
   style,
 }) => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
+  const resolvedBrand = resolveBrand(brand)
 
   const entrance = spring({
     frame,
@@ -44,11 +50,18 @@ export const TitleCard: React.FC<TitleCardProps> = ({
   const translateY = style === 'slide-up'
     ? interpolate(entrance, [0, 1], [40, 0])
     : 0
+  const wipeScale = style === 'wipe'
+    ? interpolate(entrance, [0, 1], [0, 1])
+    : 1
+  const exitOpacity = interpolate(frame, [Math.max(0, duration * fps - 12), duration * fps], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  })
 
   return (
     <AbsoluteFill
       style={{
-        backgroundColor,
+        background: `linear-gradient(145deg, ${resolvedBrand.background} 0%, ${resolvedBrand.accentColor} 140%)`,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -58,20 +71,34 @@ export const TitleCard: React.FC<TitleCardProps> = ({
     >
       <div
         style={{
-          opacity,
+          opacity: opacity * exitOpacity,
           transform: `scale(${scale}) translateY(${translateY}px)`,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: 20,
+          width: '100%',
+          maxWidth: 720,
         }}
       >
+        {style === 'wipe' ? (
+          <div
+            style={{
+              position: 'absolute',
+              inset: '-12%',
+              backgroundColor: resolvedBrand.accentColor,
+              transform: `scaleX(${wipeScale})`,
+              transformOrigin: 'left center',
+              opacity: 0.18,
+            }}
+          />
+        ) : null}
         <div
           style={{
-            color: textColor,
+            color: resolvedBrand.textColor,
             fontSize: 80,
             fontWeight: 800,
-            fontFamily,
+            fontFamily: resolvedBrand.headingFont,
             textAlign: 'center',
             lineHeight: 1.1,
           }}
@@ -81,10 +108,10 @@ export const TitleCard: React.FC<TitleCardProps> = ({
         {subtitle ? (
           <div
             style={{
-              color: textColor,
+              color: resolvedBrand.textColor,
               fontSize: 36,
               fontWeight: 400,
-              fontFamily,
+              fontFamily: resolvedBrand.bodyFont,
               textAlign: 'center',
               opacity: 0.6,
               lineHeight: 1.3,
