@@ -46,7 +46,12 @@ export function applyBrandingToTemplate(
       },
       highlight: {
         ...template.highlight,
-        color: resolvedBrand.highlightColor || template.highlight.color,
+        // highlightColor drives the background box behind the active word.
+        // highlight.color is the text colour shown ON TOP of that box.
+        // If the template sets an explicit highlight.color (e.g. '#000000'),
+        // keep it — otherwise default to black so text reads on any bright highlight.
+        backgroundColor: resolvedBrand.highlightColor || template.highlight.backgroundColor,
+        color: template.highlight.color || '#000000',
       },
     },
   }

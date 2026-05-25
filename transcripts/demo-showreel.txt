@@ -1,0 +1,11 @@
+Your real product isn't the code. It's the spec library.
+
+Every spec you write is a reusable, sellable, delegatable asset.
+
+The code is the output. The specs are the IP.
+
+Write them well enough and you could hand any dev team the vault.
+
+They'd ship the same product without you in the room.
+
+That's leverage.

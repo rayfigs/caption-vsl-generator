@@ -1,0 +1,28 @@
+CLAUDE CODE WORKFLOW INSIGHTS
+Generated: April 4, 2026
+
+== WHAT YOU'RE DOING WELL ==
+
+- You spec first, build second. Thinking and execution are separate sessions, which keeps costs down and quality up.
+- You batch Codex runs in parallel across repos. That's real throughput multiplication.
+- You checkpoint religiously. Every session ends with a SQLite + Obsidian save. Context survives session resets.
+- You treat AI spend like a line item, not an open tab. $400/mo target with clear delegation rules (Claude for specs, Codex for bulk execution).
+- Multi-agent team is actually working. Bug fixes, feature dev, and monitoring are happening in parallel without you touching them.
+
+== WHERE YOU COULD DO BETTER ==
+
+- Build failures eat your budget. Two sessions burned 900s each chasing the same webpack issue. A pre-flight "does it build?" check before any Codex run would save real money.
+- NODE_ENV=production in your shell broke installs silently for days. Environment hygiene (a .bashrc guard or a build script wrapper) would prevent that class of problem entirely.
+- You sometimes ask Claude to investigate when you could just look. "Is the token valid?" is a 5-second curl. Save the AI calls for things that need reasoning, not lookup.
+- Merge conflicts from parallel Codex branches are becoming a pattern. Consider having Codex rebase onto master before finishing, or run a quick conflict check before kicking off the next batch.
+
+== CLAUDE CODE FEATURES TO USE BETTER ==
+
+- Background agents: You're running Codex in separate terminals. Claude Code can run background agents natively and notify you when they finish. Less tab juggling.
+- Hooks (settings.json): You could set up a pre-commit hook that runs npm test && npm run build automatically. Codex branches that don't pass never make it to you.
+- /loop: Use it to poll Codex branch status every 10 minutes instead of manually checking. "Is codex/integration-meta done yet?" becomes automatic.
+- Scheduled triggers: Your Slack monitor runs on a cron. You could add a daily "check all Codex branches, merge anything that passes tests" trigger.
+
+== GOLDEN NUGGET ==
+
+Your real product isn't the code. It's the spec library in Obsidian. Every Codex spec you write is a reusable, sellable, delegatable asset. The code is the output. The specs are the IP. Keep writing them at this quality and you could hand any competent dev team the Obsidian vault and they'd ship the same product without you in the room. That's leverage.

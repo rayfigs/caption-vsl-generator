@@ -1,0 +1,1 @@
+Hello world. This is a test of the caption VSL generator. Each word should highlight as it's spoken.

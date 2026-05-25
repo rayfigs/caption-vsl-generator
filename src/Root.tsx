@@ -8,6 +8,11 @@ import { ExplainerScene } from './compositions/ExplainerScene'
 import { EndCard } from './compositions/EndCard'
 import { Showreel } from './showreel/Showreel'
 import { getTemplate } from './templates'
+import { ChatScreen } from './components/imessage/ChatScreen'
+import { calculateConversationDuration } from './imessage/duration'
+import { defaultBrandProps } from './imessage/brand'
+import { sampleConversation } from './imessage/sample-conversation'
+import type { VideoCompositionProps } from './imessage/types'
 
 // Pre-load Montserrat so it's available when the Fitness Doctor brand renders.
 // This is a no-op if the font is already cached.
@@ -128,6 +133,27 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         defaultProps={{}}
+      />
+      <Composition
+        id="IosMessenger"
+        component={ChatScreen as unknown as React.ComponentType<Record<string, unknown>>}
+        fps={30}
+        width={1080}
+        height={1920}
+        durationInFrames={300}
+        defaultProps={{
+          conversation: sampleConversation,
+          contactName: 'Friend',
+          is3D: true,
+          brand: defaultBrandProps,
+        } as unknown as Record<string, unknown>}
+        calculateMetadata={({ props }) => {
+          return {
+            durationInFrames: calculateConversationDuration(
+              (props as unknown as VideoCompositionProps).conversation
+            ),
+          }
+        }}
       />
     </>
   )

@@ -65,7 +65,11 @@ export function parseTranscript(
   wordTimestamps: WordTimestamp[],
   layout: TranscriptLayout
 ): CaptionSegment[] {
-  const sanitizedWords = wordTimestamps.filter((word) => stripParagraphMarkers(word.word).length > 0)
+  const sanitizedWords = wordTimestamps.filter((word) => {
+    const cleaned = stripParagraphMarkers(word.word)
+    // Remove empty words and punctuation-only tokens (==, --, -, *, #, etc.)
+    return cleaned.length > 0 && !/^[=\-*#>]+$/.test(cleaned)
+  })
   const segments: CaptionSegment[] = []
   let currentSegmentWords: WordTimestamp[] = []
 
@@ -87,7 +91,14 @@ export function parseTranscript(
       const overflowBoundary = candidateLines.length > layout.maxLines
 
       if (sentenceBoundary || paragraphBoundary || wordPauseBoundary || overflowBoundary) {
-        segments.push(buildSegment(currentSegmentWords, word.start))
+        // At sentence boundaries, end the segment at the last word's natural end time
+        // plus a small buffer, rather than stretching to the next word's start.
+        // This creates a brief blank gap between sentences for visual breathing room.
+        const lastWordEnd = currentSegmentWords[currentSegmentWords.length - 1]?.end ?? 0
+        const segEndTime = sentenceBoundary
+          ? Math.min(lastWordEnd + 0.15, word.start)  // 150ms linger after sentence end
+          : word.start
+        segments.push(buildSegment(currentSegmentWords, segEndTime))
         currentSegmentWords = []
       }
     }

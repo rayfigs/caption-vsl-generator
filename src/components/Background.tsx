@@ -1,4 +1,4 @@
-import { AbsoluteFill, Img, Video } from 'remotion'
+import { AbsoluteFill, Img, OffthreadVideo } from 'remotion'
 import type { Template } from '../lib/types'
 
 interface BackgroundProps {
@@ -47,16 +47,35 @@ export const Background: React.FC<BackgroundProps> = ({ config }) => {
     return (
       <>
         <AbsoluteFill>
-          <Video src={config.videoUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', ...mediaStyle }} />
+          {/*
+            OffthreadVideo reads frames directly from the file during rendering,
+            avoiding the jitter that <Video> causes when Remotion captures frames
+            from an HTML video element. Required for smooth output video.
+          */}
+          <OffthreadVideo src={config.videoUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', ...mediaStyle }} />
         </AbsoluteFill>
         {overlay}
       </>
     )
   }
 
+  const radialGlow =
+    config.radialGlow
+      ? (
+          <AbsoluteFill
+            style={{
+              background: `radial-gradient(ellipse at center, ${config.radialGlow.color} 0%, transparent ${Math.round((config.radialGlow.size ?? 0.5) * 100)}%)`,
+              opacity: config.radialGlow.opacity ?? 0.35,
+              pointerEvents: 'none',
+            }}
+          />
+        )
+      : null
+
   return (
     <>
       <AbsoluteFill style={{ backgroundColor: config.color || '#000000' }} />
+      {radialGlow}
       {overlay}
     </>
   )

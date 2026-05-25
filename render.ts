@@ -220,6 +220,7 @@ export async function renderCaptionVSL(options: RenderCaptionVSLOptions) {
       // Send the AUDIO version to ElevenLabs (with pronunciation overrides)
       speech = await generateSpeech(audioText, {
         voiceId: options.voiceId,
+        voiceSettings: options.voiceSettings,
         outputPath: audioPath,
       })
       // Save timestamps for future renders
@@ -280,20 +281,41 @@ export async function renderCaptionVSL(options: RenderCaptionVSLOptions) {
   }
   // ───────────────────────────────────────────────────────────────────────────
 
+  // ── Background slides ──────────────────────────────────────────────────────
+  // Copy slide images into the bundle and build the props array
+  let backgroundSlides: Array<{ imageUrl: string; startTime: number; endTime: number }> | undefined
+  if (options.backgroundSlides && options.backgroundSlides.length > 0) {
+    backgroundSlides = []
+    for (const slide of options.backgroundSlides) {
+      const imgFileName = path.basename(slide.imagePath)
+      await copyFile(slide.imagePath, path.join(serveUrl, imgFileName))
+      backgroundSlides.push({
+        imageUrl: imgFileName,
+        startTime: slide.startTime,
+        endTime: slide.endTime,
+      })
+    }
+    process.stderr.write(`Background slides: ${backgroundSlides.length} images loaded\n`)
+  }
+  // ───────────────────────────────────────────────────────────────────────────
+
   const fps = 30
   // Add 0.5s padding at the end so the last words don't get cut off
   const totalDurationFrames = Math.ceil((speech.duration + 0.5) * fps)
 
+  const inputProps = {
+    template,
+    brand: resolvedBrand,
+    segments,
+    audioUrl: servedAudioUrl,
+    audioDuration: speech.duration,
+    backgroundSlides,
+  }
+
   const composition = await selectComposition({
     serveUrl,
     id: 'CaptionVSL',
-    inputProps: {
-      template,
-      brand: resolvedBrand,
-      segments,
-      audioUrl: servedAudioUrl,
-      audioDuration: speech.duration,
-    },
+    inputProps,
   })
 
   // Override the hardcoded duration with the actual audio length
@@ -310,13 +332,7 @@ export async function renderCaptionVSL(options: RenderCaptionVSLOptions) {
     // to decode frames at arbitrary seek positions. Default 30s is too short
     // for longer testimonial clips.
     timeoutInMilliseconds: 120_000,
-    inputProps: {
-      template,
-      brand: resolvedBrand,
-      segments,
-      audioUrl: servedAudioUrl,
-      audioDuration: speech.duration,
-    },
+    inputProps,
   })
 
   return {

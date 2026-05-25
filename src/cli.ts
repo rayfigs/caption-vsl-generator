@@ -258,10 +258,22 @@ export async function runCli(argv = process.argv.slice(2)) {
       // --transcriber whisper: use Whisper instead of ElevenLabs
       const transcriber = (flags['transcriber'] as 'elevenlabs' | 'whisper' | undefined) ?? 'elevenlabs'
 
+      // --bg-slides <path.json>: background images that appear during specific time ranges
+      // JSON format: [{ "imagePath": "/path/to/img.png", "startTime": 10.5, "endTime": 25.0 }, ...]
+      let backgroundSlides: Array<{ imagePath: string; startTime: number; endTime: number }> | undefined
+      if (flags['bg-slides']) {
+        const raw = await readFile(path.resolve(flags['bg-slides']), 'utf8')
+        backgroundSlides = JSON.parse(raw)
+      }
+
+      // --voice-settings '{"stability":0.4,"style":0.35,...}': expressive delivery controls
+      const voiceSettings = flags['voice-settings'] ? JSON.parse(flags['voice-settings']) : undefined
+
       return renderCaptionVSL({
         transcript: flags.transcript,
         templateId: flags.template || 'rorick-bold',
         voiceId: flags.voice || 'adam',
+        voiceSettings,
         outputPath: flags.output,
         canvas,
         brand: parseBrandJson(flags['brand-json']),
@@ -270,6 +282,7 @@ export async function runCli(argv = process.argv.slice(2)) {
         inputVideo: flags['input-video'] ? path.resolve(flags['input-video']) : undefined,
         transcriber,
         autoReframe: flags['auto-reframe'] === 'true',
+        backgroundSlides,
       })
     }
     case 'batch': {

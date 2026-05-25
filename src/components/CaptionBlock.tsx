@@ -251,7 +251,7 @@ export const CaptionBlock: React.FC<CaptionBlockProps> = ({
                   ...(filter ? { filter } : {}),
                 }}
               >
-                {/* Highlight box: positioned behind text via lower z-index */}
+                {/* Highlight box: beveled gradient with bottom shadow */}
                 {hasHighlightBg && isActive && (
                   <span
                     style={{
@@ -260,11 +260,14 @@ export const CaptionBlock: React.FC<CaptionBlockProps> = ({
                       left: '-10px',
                       right: '-10px',
                       bottom: '-6px',
-                      backgroundColor: template.highlight.backgroundColor,
+                      background: `linear-gradient(180deg, ${template.highlight.backgroundColor} 0%, ${template.highlight.backgroundColor} 60%, ${template.highlight.backgroundColor}cc 100%)`,
                       borderRadius: 8,
                       zIndex: 0,
                       transform: `scale(${highlightScale})`,
                       transformOrigin: 'center center',
+                      boxShadow: `0 6px 18px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -2px 4px rgba(0,0,0,0.3)`,
+                      borderTop: '1px solid rgba(255,255,255,0.3)',
+                      borderBottom: '1px solid rgba(0,0,0,0.25)',
                     }}
                   />
                 )}
